@@ -6,9 +6,7 @@ import com.example.demo.dto.response.AuthenticationResponseDto;
 import com.example.demo.module.Role;
 import com.example.demo.module.User;
 import com.example.demo.repository.UserRepo;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.Authenticator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,13 +18,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
-
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationMeneger;
-
+    private final JavaSmtpGmailSenderService senderService;
 
     public String register(RegisterRequestDto request) {
         User user = userRepo.findByEmail(request.getEmail()).orElse(null);
@@ -59,11 +55,16 @@ public class AuthenticationService {
         claims.put("authorities", user.getAuthorities().stream().map(Object::toString).toArray());
         claims.put("userId", user.getId());
         String token = jwtService.generateToken( claims,user);
-
+        senderService.sendEmail("huseynovali612@gmail.com","This is subject","This is email body");
         return AuthenticationResponseDto.builder()
                 .token(token)
                 .build();
     }
 
+
+    public void sendEmail(String email) {
+
+       senderService.sendEmail(email,"Reset Password","Your Otp Code :" + 1234);
+    }
 
 }
