@@ -63,8 +63,11 @@ public class AuthenticationService {
 
 
     public void sendEmail(String email) {
-
-       senderService.sendEmail(email,"Reset Password","Your Otp Code :" + 1234);
+        int otp = (int) (Math.random() * 10000);
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setOtp(otp);
+        userRepo.save(user);
+       senderService.sendEmail(email,"Reset Password","Your Otp Code :" + otp);
     }
 
 }
