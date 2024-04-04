@@ -62,12 +62,30 @@ public class AuthenticationService {
     }
 
 
-    public void sendEmail(String email) {
+    public void sendOtpEmail(String email) {
         int otp = (int) (Math.random() * 10000);
         User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         user.setOtp(otp);
+        user.setOtpCount(3);
         userRepo.save(user);
        senderService.sendEmail(email,"Reset Password","Your Otp Code :" + otp);
+    }
+    public boolean verifyOtp(String email, int otp) {
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        if( user.getOtpCount() == 0) {
+            throw new RuntimeException("You have reached the limit of attempts");
+        }else if (user.getOtp() == otp) {
+            user.setOtp(0);
+            user.setOtpCount(3);
+            userRepo.save(user);
+            return true;
+        } else {
+            user.setOtpCount(user.getOtpCount() - 1);
+            userRepo.save(user);
+            return false;
+        }
+
+
     }
 
 }

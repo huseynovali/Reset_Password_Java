@@ -31,8 +31,14 @@ public class AuthController {
     }
 
     @PostMapping("send-email")
-    public void sendEmail(@RequestBody JsonNode request) {
-       authService.sendEmail(request.get("email").asText());
+    public ResponseEntity<String> sendEmail(@RequestBody JsonNode request) {
+       authService.sendOtpEmail(request.get("email").asText());
+        return ResponseEntity.ok("Email Send !");
+    }
+
+    @PostMapping("verify-otp")
+    public ResponseEntity<Boolean> verifyOtp(@RequestBody JsonNode request) {
+        return ResponseEntity.ok(authService.verifyOtp(request.get("email").asText(), request.get("otp").asInt()));
     }
 
 }
