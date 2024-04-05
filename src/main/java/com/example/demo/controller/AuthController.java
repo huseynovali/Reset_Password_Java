@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
@@ -40,5 +37,12 @@ public class AuthController {
     public ResponseEntity<Boolean> verifyOtp(@RequestBody JsonNode request) {
         return ResponseEntity.ok(authService.verifyOtp(request.get("email").asText(), request.get("otp").asInt()));
     }
+
+    @PutMapping("reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody JsonNode request) {
+        authService.resetPassword(request.get("email").asText(), request.get("password").asText());
+        return ResponseEntity.ok("Password reset successfully");
+    }
+
 
 }

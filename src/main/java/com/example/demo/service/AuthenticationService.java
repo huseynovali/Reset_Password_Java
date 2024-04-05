@@ -86,6 +86,12 @@ public class AuthenticationService {
         }
 
 
+
+    }
+    public void resetPassword(String email, String password) {
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(password));
+        userRepo.save(user);
     }
 
 }
